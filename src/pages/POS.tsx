@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductList from "../components/ProductList";
 import type { Product } from "../data/products";
 
+const CART_KEY = "vendure_cart";
+
 export default function POS() {
-  const [cart, setCart] = useState<Product[]>([]);
+  // 🧠 Initialize cart from localStorage
+  const [cart, setCart] = useState<Product[]>(() => {
+    const stored = localStorage.getItem(CART_KEY);
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // 💾 Save cart to localStorage on every update
+  useEffect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }, [cart]);
 
   const handleAddToCart = (product: Product) => {
-    setCart([...cart, product]);
+    setCart((prev) => [...prev, product]);
   };
 
   const totalPrice = cart.reduce((total, item) => total + item.price, 0);
