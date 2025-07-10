@@ -8,7 +8,7 @@ type Props = {
 export default function ProductList({ onAddToCart }: Props) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {products.map((item) => (
+      {products.map((item: Product) => (
         <div
           key={item.id}
           className="bg-white p-4 rounded-lg shadow hover:bg-blue-100 cursor-pointer"
