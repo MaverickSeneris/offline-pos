@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import ProductList from "../components/ProductList";
 import type { Product } from "../data/products";
 
+// ✅ Good practice: centralized storage keys
 const CART_KEY = "vendure_cart";
 const SALES_KEY = "vendure_sales";
 
