@@ -5,7 +5,6 @@ import type { Product } from "../data/products";
 const CART_KEY = "vendure_cart";
 const SALES_KEY = "vendure_sales";
 
-
 export default function POS() {
   // 🧠 Initialize cart from localStorage
   const [cart, setCart] = useState<Product[]>(() => {
@@ -52,7 +51,6 @@ export default function POS() {
 
     alert("✅ Checkout successful!");
   };
-  
 
   return (
     <div className="min-h-screen p-4 bg-gray-100 flex flex-col md:flex-row gap-4">
