@@ -48,6 +48,9 @@ export default function Sales() {
 
             return (
               <div key={sale.id} className="bg-white p-4 rounded shadow">
+                <div className="font-semibold text-sm text-gray-700 mb-1">
+                  Receipt No: {sale.id}
+                </div>
                 <div className="text-sm text-gray-500 mb-2">
                   {new Date(sale.date).toLocaleString()}
                 </div>
