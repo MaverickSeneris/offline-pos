@@ -10,7 +10,8 @@ type CartItem = Product & { quantity: number };
 
 export default function POS() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [cashPaid, setCashPaid] = useState("");
+  const [cashPaid, setCashPaid] = useState<string>("");
+
 
   useEffect(() => {
     const stored = localStorage.getItem(CART_KEY);

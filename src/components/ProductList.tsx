@@ -4,12 +4,12 @@ import Numpad from "../components/NumPad";
 
 type Props = {
   onAddToCart: (product: Product) => void;
-  setCashPaid: (value: string) => void;
+  setCashPaid: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function ProductList({ onAddToCart, setCashPaid }: Props) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [price, setPrice] = useState("");
+  // const [price, setPrice] = useState("");
 
   const handleNumpadInput = (value: string) => {
     setCashPaid((prev) => {
