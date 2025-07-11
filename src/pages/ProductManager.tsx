@@ -65,6 +65,15 @@ export default function ProductManager() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
+      <div className="mb-4 flex flex-col md:flex-row justify-between gap-2">
+        <a href="/" className="text-blue-600 underline">
+          ← Back to POS
+        </a>
+        <a href="/sales" className="text-blue-600 underline">
+          → View Sales History
+        </a>
+      </div>
+
       <h1 className="text-2xl font-bold mb-4">Product Manager</h1>
 
       {/* Add product form */}
