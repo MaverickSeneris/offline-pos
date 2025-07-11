@@ -21,7 +21,13 @@ export default function Sales() {
 
   return (
     <div className="min-h-screen p-4 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">📊 Sales History</h1>
+      <div className="mb-4">
+        <a href="/" className="text-blue-600 underline">
+          ← Back to POS
+        </a>
+      </div>
+
+      <h1 className="text-2xl font-bold mb-4">Sales History</h1>
 
       {sales.length === 0 ? (
         <p className="text-gray-500">No sales yet.</p>
