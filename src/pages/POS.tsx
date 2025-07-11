@@ -90,11 +90,13 @@ export default function POS() {
     alert("✅ Checkout successful!");
   };
 
+
+
   return (
     <div className="min-h-screen p-4 bg-gray-100 flex flex-col md:flex-row gap-4">
       <div className="w-full md:w-2/3">
         <h1 className="text-2xl font-bold mb-4">Products</h1>
-        <ProductList onAddToCart={handleAddToCart} />
+        <ProductList onAddToCart={handleAddToCart} setCashPaid={setCashPaid} />
       </div>
 
       <div className="w-full md:w-1/3">
