@@ -140,6 +140,9 @@ export default function POS() {
         <a href="/sales" className="text-blue-500 underline mt-4 inline-block">
           View Sales History
         </a>
+        <a href="/products" className="text-blue-500 underline mt-2 block">
+          Manage Products
+        </a>
       </div>
     </div>
   );
