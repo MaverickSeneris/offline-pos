@@ -21,7 +21,7 @@ export default function Numpad({ onInput }: Props) {
 
   return (
     <div className="grid grid-cols-3 gap-2 mt-4 w-48">
-      {["7", "8", "9", "4", "5", "6", "1", "2", "3", "0", ".", "←", "C"].map((key) => (
+      {keys.map((key) => (
         <button
           key={key}
           className="bg-gray-300 p-4 rounded text-lg font-bold hover:bg-gray-400"
