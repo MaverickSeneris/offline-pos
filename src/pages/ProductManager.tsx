@@ -64,82 +64,84 @@ export default function ProductManager() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Product Manager</h1>
 
-      <div className="flex gap-2 mb-4">
+      {/* Add product form */}
+      <div className="flex flex-col md:flex-row gap-2 mb-6">
         <input
           type="text"
           placeholder="Product name"
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full md:w-1/2"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
           type="number"
           placeholder="Price"
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full md:w-1/4"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
         <button
           onClick={handleAdd}
-          className="bg-blue-500 text-black px-4 py-2 rounded"
+          className="bg-blue-500 text-black px-4 py-2 rounded w-full md:w-auto"
         >
           Add
         </button>
       </div>
 
-      <ul className="space-y-2">
+      {/* Product list */}
+      <ul className="space-y-4">
         {products.map((product) => (
           <li
             key={product.id}
-            className="flex flex-col md:flex-row justify-between items-start md:items-center border p-2 rounded"
+            className="border p-4 rounded bg-white shadow-sm space-y-2"
           >
             {editId === product.id ? (
-              <div className="flex flex-col md:flex-row gap-2 w-full md:items-center">
+              <div className="flex flex-col md:flex-row md:items-center md:gap-2">
                 <input
                   type="text"
-                  className="border p-1 rounded w-full md:w-40"
+                  className="border p-2 rounded w-full md:w-1/2"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                 />
                 <input
                   type="number"
-                  className="border p-1 rounded w-full md:w-28"
+                  className="border p-2 rounded w-full md:w-1/4"
                   value={editPrice}
                   onChange={(e) => setEditPrice(e.target.value)}
                 />
                 <div className="flex gap-2 mt-2 md:mt-0">
                   <button
                     onClick={saveEdit}
-                    className="bg-green-500 text-black px-2 py-1 rounded"
+                    className="bg-green-500 text-black px-4 py-2 rounded"
                   >
                     Save
                   </button>
                   <button
                     onClick={cancelEdit}
-                    className="bg-gray-400 text-black px-2 py-1 rounded"
+                    className="bg-gray-300 text-black px-4 py-2 rounded"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="flex justify-between items-center w-full">
-                <span>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                <span className="text-lg">
                   {product.name} - ₱{product.price}
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => startEdit(product)}
-                    className="bg-yellow-500 text-black px-2 py-1 rounded"
+                    className="bg-yellow-500 text-black px-4 py-1 rounded"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="bg-red-500 text-black px-2 py-1 rounded"
+                    className="bg-red-500 text-black px-4 py-1 rounded"
                   >
                     Delete
                   </button>
