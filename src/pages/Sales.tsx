@@ -33,22 +33,38 @@ export default function Sales() {
         <p className="text-gray-500">No sales yet.</p>
       ) : (
         <div className="space-y-4">
-          {sales.map((sale) => (
-            <div key={sale.id} className="bg-white p-4 rounded shadow">
-              <div className="text-sm text-gray-500 mb-2">
-                {new Date(sale.date).toLocaleString()}
+          {sales.map((sale) => {
+            const grouped = sale.items.reduce((acc, item) => {
+              if (!acc[item.name]) {
+                acc[item.name] = { ...item, quantity: 1 };
+              } else {
+                acc[item.name].quantity += 1;
+                acc[item.name].price += item.price;
+              }
+              return acc;
+            }, {} as Record<string, { name: string; price: number; quantity: number }>);
+
+            const groupedItems = Object.values(grouped);
+
+            return (
+              <div key={sale.id} className="bg-white p-4 rounded shadow">
+                <div className="text-sm text-gray-500 mb-2">
+                  {new Date(sale.date).toLocaleString()}
+                </div>
+                <ul className="mb-2 space-y-1">
+                  {groupedItems.map((item, idx) => (
+                    <li key={idx} className="flex justify-between text-sm">
+                      <span>
+                        {item.name} × {item.quantity}
+                      </span>
+                      <span>₱{item.price}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="font-bold text-right">Total: ₱{sale.total}</div>
               </div>
-              <ul className="mb-2 space-y-1">
-                {sale.items.map((item, idx) => (
-                  <li key={idx} className="flex justify-between text-sm">
-                    <span>{item.name}</span>
-                    <span>₱{item.price}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="font-bold text-right">Total: ₱{sale.total}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
