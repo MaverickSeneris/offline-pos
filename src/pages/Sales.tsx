@@ -109,84 +109,100 @@ export default function Sales() {
 
   // 🖨️ Print a single receipt by injecting it into a hidden iframe
   const printReceipt = (sale: Sale) => {
-    const printWindow = window.open("", "_blank", "width=600,height=800");
+    const printWindow = window.open("", "_blank", "width=350,height=600");
 
     if (!printWindow) return;
 
     const receiptHTML = `
-    <html>
-      <head>
-        <title>Receipt #${sale.id}</title>
-       <style>
-  body {
-    font-family: monospace;
-    padding: 20px;
-    width: 300px;
-    margin: 0 auto;
-  }
-  hr {
-    margin: 10px 0;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .border-b {
-    border-bottom: 1px dotted #ccc;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
-  }
-  @media print {
-    body {
-      padding: 0;
-      margin: 0;
-      width: 300px;
-    }
-    button {
-      display: none !important;
-    }
-  }
-</style>
-
-      </head>
-      <body>
-        <div>Vendure Mart</div>
-        <div>123 National Rd, Rizal, Laguna</div>
-        <div>Email: hello@venduremart.ph</div>
-        <div>Tel: (049) 123-4567</div>
-        <div>Cashier: Jho | Manager: Mav</div>
-        <hr />
-        <div>Receipt #: ${sale.id}</div>
-        <div>${new Date(sale.date).toLocaleString()}</div>
-        <hr />
-        ${sale.items
-          .map(
-            (item) => `
-            <div class="border-b">
-              ${item.name} × ${item.quantity}
-              <div class="text-right">₱${(item.price * item.quantity).toFixed(
-                2
-              )}</div>
-            </div>`
-          )
-          .join("")}
-        <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(2)}</div>
-        <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(2)}</div>
-        <div class="text-right"><strong>Total: ₱${(
-          (sale.total ?? 0) + (sale.tax ?? 0)
-        ).toFixed(2)}</strong></div>
-        <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
-        <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(2)}</div>
-        <hr />
-        <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
-      </body>
-    </html>
-  `;
+      <html>
+        <head>
+          <title>Receipt #${sale.id}</title>
+          <style>
+            body {
+              font-family: monospace;
+              width: 300px;
+              margin: 0 auto;
+              padding: 10px;
+            }
+            hr {
+              margin: 10px 0;
+              border: none;
+              border-top: 1px dotted #ccc;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .text-center {
+              text-align: center;
+            }
+            .item {
+              display: flex;
+              justify-content: space-between;
+              border-bottom: 1px dotted #ccc;
+              padding: 4px 0;
+            }
+            strong {
+              font-weight: bold;
+            }
+            @media print {
+              body {
+                margin: 0;
+                padding: 0;
+                width: 300px;
+              }
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          <div class="text-center">
+            <div><strong>Vendure Mart</strong></div>
+            <div>123 National Rd, Rizal, Laguna</div>
+            <div>Email: hello@venduremart.ph</div>
+            <div>Tel: (049) 123-4567</div>
+            <div>Cashier: Jho | Manager: Mav</div>
+          </div>
+          <hr />
+          <div>Receipt #: ${sale.id}</div>
+          <div>${new Date(sale.date).toLocaleString()}</div>
+          <hr />
+          ${sale.items
+            .map(
+              (item) => `
+              <div class="item">
+                <span>${item.name} � ${item.quantity}</span>
+                <span>\u20b1${(item.price * item.quantity).toFixed(2)}</span>
+              </div>
+            `
+            )
+            .join("")}
+          <hr />
+          <div class="text-right">Subtotal: \u20b1${(sale.total ?? 0).toFixed(
+            2
+          )}</div>
+          <div class="text-right">Tax (12%): \u20b1${(sale.tax ?? 0).toFixed(
+            2
+          )}</div>
+          <div class="text-right"><strong>Total: \u20b1${(
+            (sale.total ?? 0) + (sale.tax ?? 0)
+          ).toFixed(2)}</strong></div>
+          <div class="text-right">Cash: \u20b1${(sale.cash ?? 0).toFixed(
+            2
+          )}</div>
+          <div class="text-right">Change: \u20b1${(sale.change ?? 0).toFixed(
+            2
+          )}</div>
+          <hr />
+          <div class="text-center">\u2500\u2500\u2500 THANK YOU FOR YOUR PURCHASE! \u2500\u2500\u2500
+            <br />
+                This serves as your official receipt.
+          </div>
+        </body>
+      </html>
+    `;
 
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
     printWindow.focus();
-    printWindow.print();
-    printWindow.close();
   };
 
   return (
