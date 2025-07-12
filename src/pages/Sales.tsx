@@ -14,6 +14,8 @@ const SALES_KEY = "vendure_sales";
 
 export default function Sales() {
   const [sales, setSales] = useState<Sale[]>([]);
+  const [fromDate, setFromDate] = useState(""); // Filter start date
+  const [toDate, setToDate] = useState(""); // Filter end date
 
   useEffect(() => {
     const stored = localStorage.getItem(SALES_KEY);
@@ -30,6 +32,46 @@ export default function Sales() {
     localStorage.setItem(SALES_KEY, JSON.stringify(updatedSales));
   };
 
+  // 🔍 Filter sales by selected date range
+  const filteredSales = sales.filter((sale) => {
+    const saleDate = new Date(sale.date).toISOString().slice(0, 10);
+    return (
+      (!fromDate || saleDate >= fromDate) && (!toDate || saleDate <= toDate)
+    );
+  });
+
+  // 🎯 Preset filter functions
+  const setToday = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    setFromDate(today);
+    setToDate(today);
+  };
+
+  const setThisWeek = () => {
+    const now = new Date();
+    const first = new Date(now);
+    first.setDate(now.getDate() - now.getDay());
+    const last = new Date(first);
+    last.setDate(first.getDate() + 6);
+
+    setFromDate(first.toISOString().slice(0, 10));
+    setToDate(last.toISOString().slice(0, 10));
+  };
+
+  const setThisMonth = () => {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    setFromDate(first.toISOString().slice(0, 10));
+    setToDate(last.toISOString().slice(0, 10));
+  };
+
+  const clearFilter = () => {
+    setFromDate("");
+    setToDate("");
+  };
+
   return (
     <div className="min-h-screen p-4 bg-gray-100">
       <div className="mb-4 flex gap-4">
@@ -41,13 +83,55 @@ export default function Sales() {
         </a>
       </div>
 
-      <h1 className="text-2xl font-bold mb-4">Sales History</h1>
+      <h1 className="text-2xl font-bold mb-2">Sales History</h1>
 
-      {sales.length === 0 ? (
-        <p className="text-gray-500">No sales yet.</p>
+      {/* 📆 Filter UI with presets */}
+      <div className="flex flex-wrap gap-2 items-center mb-6">
+        <label className="text-sm font-semibold">From:</label>
+        <input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          className="border p-1 rounded"
+        />
+        <label className="text-sm font-semibold">To:</label>
+        <input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          className="border p-1 rounded"
+        />
+        <button
+          onClick={setToday}
+          className="text-sm bg-gray-200 px-2 py-1 rounded"
+        >
+          Today
+        </button>
+        <button
+          onClick={setThisWeek}
+          className="text-sm bg-gray-200 px-2 py-1 rounded"
+        >
+          This Week
+        </button>
+        <button
+          onClick={setThisMonth}
+          className="text-sm bg-gray-200 px-2 py-1 rounded"
+        >
+          This Month
+        </button>
+        <button
+          onClick={clearFilter}
+          className="text-sm bg-gray-300 px-2 py-1 rounded"
+        >
+          All Time
+        </button>
+      </div>
+
+      {filteredSales.length === 0 ? (
+        <p className="text-gray-500">No sales in this range.</p>
       ) : (
         <div className="space-y-6">
-          {sales.map((sale) => (
+          {filteredSales.map((sale) => (
             <div
               key={sale.id}
               className="bg-white p-4 rounded shadow font-mono text-sm"
