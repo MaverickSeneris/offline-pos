@@ -72,6 +72,38 @@ export default function Sales() {
     setToDate("");
   };
 
+  function downloadCSV(sales: Sale[]) {
+    const rows = [
+      ["Receipt ID", "Date", "Item", "Qty", "Price", "Total", "Cash", "Change"],
+    ];
+
+    sales.forEach((sale) => {
+      sale.items.forEach((item, idx) => {
+        rows.push([
+          idx === 0 ? sale.id.toString() : "",
+          idx === 0 ? new Date(sale.date).toLocaleString() : "",
+          item.name,
+          item.quantity.toString(),
+          `₱${item.price.toFixed(2)}`,
+          idx === 0 ? `₱${(sale.total + (sale.tax ?? 0)).toFixed(2)}` : "",
+          idx === 0 ? `₱${(sale.cash ?? 0).toFixed(2)}` : "",
+          idx === 0 ? `₱${(sale.change ?? 0).toFixed(2)}` : "",
+        ]);
+      });
+    });
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "sales-export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="min-h-screen p-4 bg-gray-100">
       <div className="mb-4 flex gap-4">
@@ -125,6 +157,14 @@ export default function Sales() {
         >
           All Time
         </button>
+     
+          <button
+            onClick={() => downloadCSV(filteredSales)}
+            className="bg-green-500 text-black px-3 py-1 rounded text-sm"
+          >
+            ⬇️ Download CSV
+          </button>
+        
       </div>
 
       {filteredSales.length === 0 ? (
