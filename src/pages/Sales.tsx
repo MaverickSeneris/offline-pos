@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 
-type Sale = {
-  id: number;
-  date: string;
-  items: { name: string; price: number; quantity: number }[];
-  total: number;
-  tax?: number;
-  cash?: number;
-  change?: number;
-};
+// Sale type definition
+// Each sale has an ID, date, item list, totals, and optional tax, cash, change fields
 
+// 🔐 Key used to store and retrieve sales data from localStorage
 const SALES_KEY = "vendure_sales";
 
 export default function Sales() {
+  // 🧠 State to hold all sales
   const [sales, setSales] = useState<Sale[]>([]);
+
+  // 📅 States to manage date filters
   const [fromDate, setFromDate] = useState(""); // Filter start date
   const [toDate, setToDate] = useState(""); // Filter end date
 
+  // 🧲 Load sales from localStorage on component mount
   useEffect(() => {
     const stored = localStorage.getItem(SALES_KEY);
     if (stored) {
@@ -24,6 +22,7 @@ export default function Sales() {
     }
   }, []);
 
+  // ❌ Delete a sale from both UI and localStorage
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to delete this receipt?")) return;
 
@@ -32,7 +31,7 @@ export default function Sales() {
     localStorage.setItem(SALES_KEY, JSON.stringify(updatedSales));
   };
 
-  // 🔍 Filter sales by selected date range
+  // 🔍 Filter sales by selected date range (if any)
   const filteredSales = sales.filter((sale) => {
     const saleDate = new Date(sale.date).toISOString().slice(0, 10);
     return (
@@ -40,24 +39,26 @@ export default function Sales() {
     );
   });
 
-  // 🎯 Preset filter functions
+  // 🎯 Preset filter for today only
   const setToday = () => {
     const today = new Date().toISOString().slice(0, 10);
     setFromDate(today);
     setToDate(today);
   };
 
+  // 🎯 Preset filter for current week
   const setThisWeek = () => {
     const now = new Date();
     const first = new Date(now);
-    first.setDate(now.getDate() - now.getDay());
+    first.setDate(now.getDate() - now.getDay()); // Sunday
     const last = new Date(first);
-    last.setDate(first.getDate() + 6);
+    last.setDate(first.getDate() + 6); // Saturday
 
     setFromDate(first.toISOString().slice(0, 10));
     setToDate(last.toISOString().slice(0, 10));
   };
 
+  // 🎯 Preset filter for current month
   const setThisMonth = () => {
     const now = new Date();
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -67,11 +68,13 @@ export default function Sales() {
     setToDate(last.toISOString().slice(0, 10));
   };
 
+  // 🔄 Clear all filters to show all sales
   const clearFilter = () => {
     setFromDate("");
     setToDate("");
   };
 
+  // 📦 Export filtered sales to CSV
   function downloadCSV(sales: Sale[]) {
     const rows = [
       ["Receipt ID", "Date", "Item", "Qty", "Price", "Total", "Cash", "Change"],
@@ -103,6 +106,88 @@ export default function Sales() {
     link.click();
     document.body.removeChild(link);
   }
+
+  // 🖨️ Print a single receipt by injecting it into a hidden iframe
+  const printReceipt = (sale: Sale) => {
+    const printWindow = window.open("", "_blank", "width=600,height=800");
+
+    if (!printWindow) return;
+
+    const receiptHTML = `
+    <html>
+      <head>
+        <title>Receipt #${sale.id}</title>
+       <style>
+  body {
+    font-family: monospace;
+    padding: 20px;
+    width: 300px;
+    margin: 0 auto;
+  }
+  hr {
+    margin: 10px 0;
+  }
+  .text-right {
+    text-align: right;
+  }
+  .border-b {
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+  }
+  @media print {
+    body {
+      padding: 0;
+      margin: 0;
+      width: 300px;
+    }
+    button {
+      display: none !important;
+    }
+  }
+</style>
+
+      </head>
+      <body>
+        <div>Vendure Mart</div>
+        <div>123 National Rd, Rizal, Laguna</div>
+        <div>Email: hello@venduremart.ph</div>
+        <div>Tel: (049) 123-4567</div>
+        <div>Cashier: Jho | Manager: Mav</div>
+        <hr />
+        <div>Receipt #: ${sale.id}</div>
+        <div>${new Date(sale.date).toLocaleString()}</div>
+        <hr />
+        ${sale.items
+          .map(
+            (item) => `
+            <div class="border-b">
+              ${item.name} × ${item.quantity}
+              <div class="text-right">₱${(item.price * item.quantity).toFixed(
+                2
+              )}</div>
+            </div>`
+          )
+          .join("")}
+        <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(2)}</div>
+        <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(2)}</div>
+        <div class="text-right"><strong>Total: ₱${(
+          (sale.total ?? 0) + (sale.tax ?? 0)
+        ).toFixed(2)}</strong></div>
+        <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
+        <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(2)}</div>
+        <hr />
+        <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.write(receiptHTML);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
 
   return (
     <div className="min-h-screen p-4 bg-gray-100">
@@ -157,16 +242,15 @@ export default function Sales() {
         >
           All Time
         </button>
-     
-          <button
-            onClick={() => downloadCSV(filteredSales)}
-            className="bg-green-500 text-black px-3 py-1 rounded text-sm"
-          >
-            ⬇️ Download CSV
-          </button>
-        
+        <button
+          onClick={() => downloadCSV(filteredSales)}
+          className="bg-green-500 text-black px-3 py-1 rounded text-sm"
+        >
+          ⬇️ Download CSV
+        </button>
       </div>
 
+      {/* 🧾 Render filtered receipts */}
       {filteredSales.length === 0 ? (
         <p className="text-gray-500">No sales in this range.</p>
       ) : (
@@ -174,8 +258,26 @@ export default function Sales() {
           {filteredSales.map((sale) => (
             <div
               key={sale.id}
-              className="bg-white p-4 rounded shadow font-mono text-sm"
+              className="bg-white p-4 rounded shadow font-mono text-sm mx-auto w-[300px] print:w-[300px]"
             >
+              <div className="flex justify-between items-center mb-2">
+                {/* Print and Delete buttons */}
+                {/* Hide on print */}
+                <div className="flex gap-[1px] print:hidden ml-auto">
+                  <button
+                    onClick={() => printReceipt(sale)}
+                    className="bg-blue-500 text-black px-2 py-1 rounded"
+                  >
+                    Print
+                  </button>
+                  <button
+                    onClick={() => handleDelete(sale.id)}
+                    className="bg-red-500 text-black px-2 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
               <div className="flex justify-between items-center mb-2">
                 <div>
                   <div>Vendure Mart</div>
@@ -184,12 +286,6 @@ export default function Sales() {
                   <div>Tel: (049) 123-4567</div>
                   <div className="mt-1">Cashier: Jho | Manager: Mav</div>
                 </div>
-                <button
-                  onClick={() => handleDelete(sale.id)}
-                  className="bg-red-500 text-black px-2 py-1 rounded"
-                >
-                  Delete
-                </button>
               </div>
 
               <hr className="my-2" />
@@ -226,7 +322,7 @@ export default function Sales() {
 
               <hr className="my-2" />
               <div className="text-center text-xs mt-2 text-gray-500">
-                ─────── THANK YOU FOR YOUR PURCHASE! ───────
+                ─── THANK YOU FOR YOUR PURCHASE! ───
                 <br />
                 This serves as your official receipt.
               </div>
@@ -237,3 +333,14 @@ export default function Sales() {
     </div>
   );
 }
+
+// 🧾 Type definition for a single sale transaction
+type Sale = {
+  id: number;
+  date: string;
+  items: { name: string; price: number; quantity: number }[];
+  total: number;
+  tax?: number;
+  cash?: number;
+  change?: number;
+};
