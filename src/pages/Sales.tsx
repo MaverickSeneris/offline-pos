@@ -295,8 +295,10 @@ export default function Sales() {
                 </div>
               </div>
               <div className="flex justify-between items-center mb-2">
-                <div>
-                  <div>Vendure Mart</div>
+                <div className="flex flex-col justify-center items-center">
+                  <div>
+                    <strong>Vendure Mart</strong>
+                  </div>
                   <div>123 National Rd, Rizal, Laguna</div>
                   <div>Email: hello@venduremart.ph</div>
                   <div>Tel: (049) 123-4567</div>
@@ -326,7 +328,7 @@ export default function Sales() {
                 ))}
               </div>
 
-              <div className="mt-2 text-right space-y-1">
+              <div className="mt-2 text-right space-y-1 mb-6">
                 <div>Subtotal: ₱{(sale.total ?? 0).toFixed(2)}</div>
                 <div>Tax (12%): ₱{(sale.tax ?? 0).toFixed(2)}</div>
                 <div className="font-bold">
@@ -337,7 +339,7 @@ export default function Sales() {
               </div>
 
               <hr className="my-2" />
-              <div className="text-center text-xs mt-2 text-gray-500">
+              <div className="text-center text-xs my-4 text-gray-500">
                 ─── THANK YOU FOR YOUR PURCHASE! ───
                 <br />
                 This serves as your official receipt.
