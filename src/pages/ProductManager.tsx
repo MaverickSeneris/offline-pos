@@ -5,6 +5,8 @@ const PRODUCTS_KEY = "vendure_products";
 
 export default function ProductManager() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loaded, setLoaded] = useState(false); // ✅ to avoid early overwrite
+
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
 
@@ -12,14 +14,26 @@ export default function ProductManager() {
   const [editName, setEditName] = useState("");
   const [editPrice, setEditPrice] = useState("");
 
+  // ✅ Load products from localStorage once
   useEffect(() => {
     const stored = localStorage.getItem(PRODUCTS_KEY);
-    if (stored) setProducts(JSON.parse(stored));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setProducts(parsed);
+      } catch (err) {
+        console.error("Error parsing products:", err);
+      }
+    }
+    setLoaded(true); // 🧠 only after loading, set this true
   }, []);
 
+  // ✅ Save products *only after* initial load
   useEffect(() => {
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  }, [products]);
+    if (loaded) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    }
+  }, [products, loaded]);
 
   const handleAdd = () => {
     if (!name || !price) return;

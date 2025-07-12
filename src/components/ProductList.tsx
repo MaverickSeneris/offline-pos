@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Product } from "../data/products";
+import { products as seedProducts, type Product } from "../data/products";
 import Numpad from "../components/NumPad";
+
+const PRODUCTS_KEY = "vendure_products";
 
 type Props = {
   onAddToCart: (product: Product) => void;
@@ -8,8 +10,7 @@ type Props = {
 };
 
 export default function ProductList({ onAddToCart, setCashPaid }: Props) {
-  const [products, setProducts] = useState<Product[]>([]);
-  // const [price, setPrice] = useState("");
+  const [productList, setProductList] = useState<Product[]>([]); // ✅ renamed to avoid conflict
 
   const handleNumpadInput = (value: string) => {
     setCashPaid((prev) => {
@@ -20,14 +21,20 @@ export default function ProductList({ onAddToCart, setCashPaid }: Props) {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("vendure_products");
-    if (stored) setProducts(JSON.parse(stored));
+    const stored = localStorage.getItem(PRODUCTS_KEY);
+    if (stored) {
+      setProductList(JSON.parse(stored));
+    } else {
+      // First-time visit: use seed and persist it
+      setProductList(seedProducts);
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(seedProducts));
+    }
   }, []);
 
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {products.map((product) => (
+        {productList.map((product) => (
           <button
             key={product.id}
             onClick={() => onAddToCart(product)}
