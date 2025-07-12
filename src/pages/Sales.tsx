@@ -109,88 +109,89 @@ export default function Sales() {
 
   // 🖨️ Print a single receipt by injecting it into a hidden iframe
   const printReceipt = (sale: Sale) => {
-    const printWindow = window.open("", "_blank", "width=600,height=800");
-
-    if (!printWindow) return;
-
     const receiptHTML = `
-    <html>
-      <head>
-        <title>Receipt #${sale.id}</title>
-       <style>
-  body {
-    font-family: monospace;
-    padding: 20px;
-    width: 300px;
-    margin: 0 auto;
-  }
-  hr {
-    margin: 10px 0;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .border-b {
-    border-bottom: 1px dotted #ccc;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
-  }
-  @media print {
-    body {
-      padding: 0;
-      margin: 0;
-      width: 300px;
-    }
-    button {
-      display: none !important;
-    }
-  }
-</style>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Receipt #${sale.id}</title>
+          <style>
+            body {
+              font-family: monospace;
+              width: 300px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            hr {
+              margin: 10px 0;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .border-b {
+              border-bottom: 1px dotted #ccc;
+              padding-bottom: 4px;
+              margin-bottom: 4px;
+            }
+            @media print {
+              body {
+                margin: 0;
+                width: 300px;
+              }
+              .no-print {
+                display: none !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div>Vendure Mart</div>
+          <div>123 National Rd, Rizal, Laguna</div>
+          <div>Email: hello@venduremart.ph</div>
+          <div>Tel: (049) 123-4567</div>
+          <div>Cashier: Jho | Manager: Mav</div>
+          <hr />
+          <div>Receipt #: ${sale.id}</div>
+          <div>${new Date(sale.date).toLocaleString()}</div>
+          <hr />
+          ${sale.items
+            .map(
+              (item) => `
+              <div class="border-b">
+                ${item.name} × ${item.quantity}
+                <div class="text-right">₱${(item.price * item.quantity).toFixed(
+                  2
+                )}</div>
+              </div>`
+            )
+            .join("")}
+          <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(
+            2
+          )}</div>
+          <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(
+            2
+          )}</div>
+          <div class="text-right"><strong>Total: ₱${(
+            (sale.total ?? 0) + (sale.tax ?? 0)
+          ).toFixed(2)}</strong></div>
+          <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
+          <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(
+            2
+          )}</div>
+          <hr />
+          <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
+          <script>
+            window.onload = () => {
+              window.print();
+              setTimeout(() => window.close(), 300);
+            };
+          </script>
+        </body>
+      </html>
+    `;
 
-      </head>
-      <body>
-        <div>Vendure Mart</div>
-        <div>123 National Rd, Rizal, Laguna</div>
-        <div>Email: hello@venduremart.ph</div>
-        <div>Tel: (049) 123-4567</div>
-        <div>Cashier: Jho | Manager: Mav</div>
-        <hr />
-        <div>Receipt #: ${sale.id}</div>
-        <div>${new Date(sale.date).toLocaleString()}</div>
-        <hr />
-        ${sale.items
-          .map(
-            (item) => `
-            <div class="border-b">
-              ${item.name} × ${item.quantity}
-              <div class="text-right">₱${(item.price * item.quantity).toFixed(
-                2
-              )}</div>
-            </div>`
-          )
-          .join("")}
-        <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(2)}</div>
-        <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(2)}</div>
-        <div class="text-right"><strong>Total: ₱${(
-          (sale.total ?? 0) + (sale.tax ?? 0)
-        ).toFixed(2)}</strong></div>
-        <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
-        <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(2)}</div>
-        <hr />
-        <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
-      </body>
-    </html>
-  `;
-
-    printWindow.document.open();
-    printWindow.document.write(receiptHTML);
-    printWindow.document.close();
-
-    printWindow.onload = () => {
-      printWindow.focus();
-      printWindow.print();
-      setTimeout(() => printWindow.close(), 1000); // allow print dialog to load
-    };
+    const blob = new Blob([receiptHTML], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
   };
 
   return (
