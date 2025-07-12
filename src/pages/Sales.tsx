@@ -294,7 +294,7 @@ export default function Sales() {
                   </button>
                 </div>
               </div>
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-18">
                 <div className="flex flex-col justify-center items-center">
                   <div className="font-bold text-lg">
                     Vendure Mart
