@@ -182,20 +182,20 @@ export default function Sales() {
     </html>
   `;
 
-    printWindow.document.write(receiptHTML);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    // printWindow.close();
     // printWindow.document.write(receiptHTML);
     // printWindow.document.close();
+    // printWindow.focus();
+    // printWindow.print();
+    // printWindow.close();
+    printWindow.document.write(receiptHTML);
+    printWindow.document.close();
 
-    // printWindow.onload = () => {
-    //   printWindow.focus();
-    //   printWindow.print();
-    //   // Delay closing to allow mobile UIs to show dialog
-    //   setTimeout(() => printWindow.close(), 1000);
-    // };
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      // Delay closing to allow mobile UIs to show dialog
+      // setTimeout(() => printWindow.close(), 1000);
+    };
   };
 
   return (
