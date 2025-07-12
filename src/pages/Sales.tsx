@@ -108,45 +108,125 @@ export default function Sales() {
   }
 
   // 🖨️ Print a single receipt by injecting it into a hidden iframe
-  const printReceipt = (sale: Sale) => {
-    const printWindow = window.open("", "_blank", "width=600,height=800");
+  //   const printReceipt = (sale: Sale) => {
+  //     const printWindow = window.open("", "_blank", "width=600,height=800");
 
-    if (!printWindow) return;
+  //     if (!printWindow) return;
+
+  //     const receiptHTML = `
+  //     <html>
+  //       <head>
+  //         <title>Receipt #${sale.id}</title>
+  //        <style>
+  //   body {
+  //     font-family: monospace;
+  //     padding: 20px;
+  //     width: 300px;
+  //     margin: 0 auto;
+  //   }
+  //   hr {
+  //     margin: 10px 0;
+  //   }
+  //   .text-right {
+  //     text-align: right;
+  //   }
+  //   .border-b {
+  //     border-bottom: 1px dotted #ccc;
+  //     padding-bottom: 4px;
+  //     margin-bottom: 4px;
+  //   }
+  //   @media print {
+  //     body {
+  //       padding: 0;
+  //       margin: 0;
+  //       width: 300px;
+  //     }
+  //     button {
+  //       display: none !important;
+  //     }
+  //   }
+  // </style>
+
+  //       </head>
+  //       <body>
+  //         <div>Vendure Mart</div>
+  //         <div>123 National Rd, Rizal, Laguna</div>
+  //         <div>Email: hello@venduremart.ph</div>
+  //         <div>Tel: (049) 123-4567</div>
+  //         <div>Cashier: Jho | Manager: Mav</div>
+  //         <hr />
+  //         <div>Receipt #: ${sale.id}</div>
+  //         <div>${new Date(sale.date).toLocaleString()}</div>
+  //         <hr />
+  //         ${sale.items
+  //           .map(
+  //             (item) => `
+  //             <div class="border-b">
+  //               ${item.name} × ${item.quantity}
+  //               <div class="text-right">₱${(item.price * item.quantity).toFixed(
+  //                 2
+  //               )}</div>
+  //             </div>`
+  //           )
+  //           .join("")}
+  //         <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(2)}</div>
+  //         <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(2)}</div>
+  //         <div class="text-right"><strong>Total: ₱${(
+  //           (sale.total ?? 0) + (sale.tax ?? 0)
+  //         ).toFixed(2)}</strong></div>
+  //         <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
+  //         <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(2)}</div>
+  //         <hr />
+  //         <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
+  //       </body>
+  //     </html>
+  //   `;
+
+  //     printWindow.document.write(receiptHTML);
+  //     printWindow.document.close();
+  //     printWindow.focus();
+  //     printWindow.print();
+  //     printWindow.close();
+  //   };
+  // \U0001f5a8\ufe0f Print a single receipt by injecting it into a hidden iframe (works on mobile browsers)
+  const printReceipt = (sale: Sale) => {
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
 
     const receiptHTML = `
     <html>
       <head>
         <title>Receipt #${sale.id}</title>
-       <style>
-  body {
-    font-family: monospace;
-    padding: 20px;
-    width: 300px;
-    margin: 0 auto;
-  }
-  hr {
-    margin: 10px 0;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .border-b {
-    border-bottom: 1px dotted #ccc;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
-  }
-  @media print {
-    body {
-      padding: 0;
-      margin: 0;
-      width: 300px;
-    }
-    button {
-      display: none !important;
-    }
-  }
-</style>
-
+        <style>
+          body {
+            font-family: monospace;
+            padding: 20px;
+            width: 300px;
+            margin: 0 auto;
+          }
+          hr {
+            margin: 10px 0;
+          }
+          .text-right {
+            text-align: right;
+          }
+          .border-b {
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+          }
+          @media print {
+            body {
+              padding: 0;
+              margin: 0;
+              width: 300px;
+            }
+            button {
+              display: none !important;
+            }
+          }
+        </style>
       </head>
       <body>
         <div>Vendure Mart</div>
@@ -162,31 +242,46 @@ export default function Sales() {
           .map(
             (item) => `
             <div class="border-b">
-              ${item.name} × ${item.quantity}
-              <div class="text-right">₱${(item.price * item.quantity).toFixed(
-                2
-              )}</div>
+              ${item.name} � ${item.quantity}
+              <div class="text-right">\u20b1${(
+                item.price * item.quantity
+              ).toFixed(2)}</div>
             </div>`
           )
           .join("")}
-        <div class="text-right">Subtotal: ₱${(sale.total ?? 0).toFixed(2)}</div>
-        <div class="text-right">Tax (12%): ₱${(sale.tax ?? 0).toFixed(2)}</div>
-        <div class="text-right"><strong>Total: ₱${(
+        <div class="text-right">Subtotal: \u20b1${(sale.total ?? 0).toFixed(
+          2
+        )}</div>
+        <div class="text-right">Tax (12%): \u20b1${(sale.tax ?? 0).toFixed(
+          2
+        )}</div>
+        <div class="text-right"><strong>Total: \u20b1${(
           (sale.total ?? 0) + (sale.tax ?? 0)
         ).toFixed(2)}</strong></div>
-        <div class="text-right">Cash: ₱${(sale.cash ?? 0).toFixed(2)}</div>
-        <div class="text-right">Change: ₱${(sale.change ?? 0).toFixed(2)}</div>
+        <div class="text-right">Cash: \u20b1${(sale.cash ?? 0).toFixed(2)}</div>
+        <div class="text-right">Change: \u20b1${(sale.change ?? 0).toFixed(
+          2
+        )}</div>
         <hr />
-        <div class="text-center">─────── THANK YOU FOR YOUR PURCHASE! ───────</div>
+        <div class="text-center">\u2500\u2500\u2500\u2500\u2500\u2500\u2500 THANK YOU FOR YOUR PURCHASE! \u2500\u2500\u2500\u2500\u2500\u2500\u2500</div>
       </body>
     </html>
   `;
 
-    printWindow.document.write(receiptHTML);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    iframe.onload = () => {
+      iframe.contentDocument!.open();
+      iframe.contentDocument!.write(receiptHTML);
+      iframe.contentDocument!.close();
+
+      setTimeout(() => {
+        iframe.contentWindow!.focus();
+        iframe.contentWindow!.print();
+        document.body.removeChild(iframe);
+      }, 300);
+    };
+
+    // Trigger iframe load immediately in case onload doesn't fire on some mobile
+    iframe.src = "about:blank";
   };
 
   return (
