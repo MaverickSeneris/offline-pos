@@ -182,11 +182,15 @@ export default function Sales() {
     </html>
   `;
 
+    printWindow.document.open();
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      setTimeout(() => printWindow.close(), 1000); // allow print dialog to load
+    };
   };
 
   return (
