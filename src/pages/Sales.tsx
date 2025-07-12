@@ -296,8 +296,8 @@ export default function Sales() {
               </div>
               <div className="flex justify-between items-center mb-2">
                 <div className="flex flex-col justify-center items-center">
-                  <div>
-                    <strong>Vendure Mart</strong>
+                  <div className="font-bold text-lg">
+                    Vendure Mart
                   </div>
                   <div>123 National Rd, Rizal, Laguna</div>
                   <div>Email: hello@venduremart.ph</div>
