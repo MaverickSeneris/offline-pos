@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import ProductList from "../components/ProductList";
 import type { Product } from "../data/products";
+import { saveSaleLocally, syncSalesToSupabase } from "../lib/sync"; // 🆕 Offline support
 
 const CART_KEY = "vendure_cart";
 const SALES_KEY = "vendure_sales";
 const TAX_RATE = 0.12;
+const BRANCH_ID = 1; // 🔁 Replace with dynamic branch selection if needed
 
 type CartItem = Product & { quantity: number };
 
@@ -12,7 +14,7 @@ export default function POS() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cashPaid, setCashPaid] = useState<string>("");
 
-
+  // Load cart from localStorage
   useEffect(() => {
     const stored = localStorage.getItem(CART_KEY);
     if (stored) {
@@ -24,15 +26,22 @@ export default function POS() {
     }
   }, []);
 
+  // Save cart to localStorage on update
   useEffect(() => {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }, [cart]);
+    const trySync = () => {
+      if (navigator.onLine) {
+        syncSalesToSupabase();
+      }
+    };
+
+    window.addEventListener("online", trySync);
+    return () => window.removeEventListener("online", trySync);
+  }, []);
 
   const totalPrice = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
   const tax = totalPrice * TAX_RATE;
   const grandTotal = totalPrice + tax;
   const change = parseFloat(cashPaid) - grandTotal;
@@ -66,7 +75,7 @@ export default function POS() {
     if (confirm("Clear cart?")) setCart([]);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) return alert("Cart is empty!");
     if (!cashPaid) return alert("Enter cash paid.");
     if (change < 0) return alert("Insufficient cash.");
@@ -79,19 +88,23 @@ export default function POS() {
       tax,
       cash: parseFloat(cashPaid),
       change,
+      branch_id: BRANCH_ID, // \U0001f501 Change this per branch
     };
 
     const existingSales = JSON.parse(localStorage.getItem(SALES_KEY) || "[]");
     existingSales.push(newSale);
-
     localStorage.setItem(SALES_KEY, JSON.stringify(existingSales));
+
+    // Save for syncing
+    saveSaleLocally(newSale);
+
+    // Try syncing now (optional: you can defer this)
+    await syncSalesToSupabase();
+
     setCart([]);
     setCashPaid("");
-
-    alert("✅ Checkout successful!");
+    alert("\u2705 Checkout successful!");
   };
-
-
 
   return (
     <div className="min-h-screen p-4 bg-gray-100 flex flex-col md:flex-row gap-4">
