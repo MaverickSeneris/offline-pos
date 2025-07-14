@@ -108,7 +108,7 @@ export default function POS() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen mb-20">
       <Navbar />
 
       <div className="flex-1 p-4 bg-gray-100 flex flex-col md:flex-row gap-4">
