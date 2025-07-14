@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 type Profile = {
   id: string;
   name: string;
-  role: "cashier" | "manager";
+  role: "cashier" | "manager" | "owner";
   branch_id: number;
 };
 
