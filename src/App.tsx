@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { supabase } from "./lib/supabaseClient";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+
+import AuthPage from "./pages/AuthPage";
 import POS from "./pages/POS";
 import Sales from "./pages/Sales";
 import ProductManager from "./pages/ProductManager";
-import AuthPage from "./pages/AuthPage";
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { supabase } from "./lib/supabaseClient";
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import Layout from "./components/Layout"
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -40,6 +43,7 @@ export default function App() {
         <Route path="*" element={<AuthPage />} />
       ) : (
         <>
+          {/* Public home with POS for cashier */}
           <Route
             path="/"
             element={
@@ -48,23 +52,21 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Protected layout routes */}
           <Route
-            path="/products"
             element={
-              <ProtectedRoute allowedRoles={["manager"]}>
-                <ProductManager />
+              <ProtectedRoute allowedRoles={["manager", "owner"]}>
+                <Layout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/sales"
-            element={
-              <ProtectedRoute allowedRoles={["manager"]}>
-                <Sales />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/logout" element={<Logout />} />
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/products" element={<ProductManager />} />
+            <Route path="/logout" element={<Logout />} />
+          </Route>
+
           <Route path="*" element={<Navigate to="/" />} />
         </>
       )}
@@ -78,6 +80,5 @@ function Logout() {
       window.location.href = "/";
     });
   }, []);
-
   return null;
 }

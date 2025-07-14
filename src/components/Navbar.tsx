@@ -7,8 +7,8 @@ export default function Navbar() {
   const { pathname } = useLocation();
 
   if (!user) return null;
-
   const links = [
+    { to: "/dashboard", label: "Dashboard", roles: ["manager", "owner"] }, // \U0001f195
     { to: "/sales", label: "Sales", roles: ["manager", "owner"] },
     { to: "/products", label: "Products", roles: ["manager", "owner"] },
     { to: "/logout", label: "Logout", roles: ["cashier", "manager", "owner"] },
