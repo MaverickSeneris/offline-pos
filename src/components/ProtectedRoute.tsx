@@ -4,7 +4,7 @@ import { useUser } from "../contexts/UserContext";
 
 type Props = {
   children: React.ReactNode;
-  allowedRoles: Array<"cashier" | "manager">;
+  allowedRoles: Array<"cashier" | "manager" | "owner">;
 };
 
 export default function ProtectedRoute({ children, allowedRoles }: Props) {

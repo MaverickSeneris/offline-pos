@@ -132,7 +132,7 @@ export default function POS() {
                     <div>
                       <span className="font-medium">{item.name}</span>
                       <span className="ml-2 text-gray-500 text-sm">
-                        \u20b1{item.price} � {item.quantity}
+                        ₱{item.price} × {item.quantity}
                       </span>
                     </div>
                     <div className="flex gap-1">
@@ -155,15 +155,15 @@ export default function POS() {
                 <div className="mt-2 space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>\u20b1{totalPrice.toFixed(2)}</span>
+                    <span>₱{totalPrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax (12%):</span>
-                    <span>\u20b1{tax.toFixed(2)}</span>
+                    <span>₱{tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between font-bold">
                     <span>Total:</span>
-                    <span>\u20b1{grandTotal.toFixed(2)}</span>
+                    <span>₱{grandTotal.toFixed(2)}</span>
                   </div>
                   <div>
                     <input
@@ -177,9 +177,7 @@ export default function POS() {
                   {cashPaid && (
                     <div className="flex justify-between text-green-700 font-semibold">
                       <span>Change:</span>
-                      <span>
-                        \u20b1{change >= 0 ? change.toFixed(2) : "\u2014"}
-                      </span>
+                      <span>₱{change >= 0 ? change.toFixed(2) : "—"}</span>
                     </div>
                   )}
                 </div>
