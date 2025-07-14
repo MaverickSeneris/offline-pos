@@ -4,21 +4,13 @@ import POS from "./pages/POS";
 import Sales from "./pages/Sales";
 import ProductManager from "./pages/ProductManager";
 import AuthPage from "./pages/AuthPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { supabase } from "./lib/supabaseClient";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
-
-
-
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-
-  supabase.auth.onAuthStateChange(
-    (_event: AuthChangeEvent, session: Session | null) => {
-      setSession(session);
-    }
-  );
 
   useEffect(() => {
     const getSession = async () => {
@@ -44,17 +36,36 @@ export default function App() {
 
   return (
     <Routes>
-      {session ? (
-        <>
-          <Route path="/" element={<POS />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/products" element={<ProductManager />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </>
+      {!session ? (
+        <Route path="*" element={<AuthPage />} />
       ) : (
         <>
-          <Route path="*" element={<AuthPage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute allowedRoles={["cashier", "manager"]}>
+                <POS />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute allowedRoles={["manager"]}>
+                <ProductManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales"
+            element={
+              <ProtectedRoute allowedRoles={["manager"]}>
+                <Sales />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </>
       )}
     </Routes>
@@ -63,7 +74,10 @@ export default function App() {
 
 function Logout() {
   useEffect(() => {
-    supabase.auth.signOut();
+    supabase.auth.signOut().then(() => {
+      window.location.href = "/";
+    });
   }, []);
-  return <Navigate to="/" />;
+
+  return null;
 }
