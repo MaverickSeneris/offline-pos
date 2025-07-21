@@ -39,7 +39,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, name, role, branch_id")
         .eq("id", session.user.id)
         .single();
 

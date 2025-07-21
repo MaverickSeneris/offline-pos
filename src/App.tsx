@@ -9,7 +9,7 @@ import Sales from "./pages/Sales";
 import ProductManager from "./pages/ProductManager";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Layout from "./components/Layout"
+import Layout from "./components/Layout";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -47,16 +47,19 @@ export default function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute allowedRoles={["cashier", "manager"]}>
+              <ProtectedRoute allowedRoles={["cashier", "manager", "owner"]}>
                 <POS />
               </ProtectedRoute>
             }
           />
 
-          {/* Protected layout routes */}
+          {/* Logout is accessible by all roles */}
+          <Route path="/logout" element={<Logout />} />
+
+          {/* Protected layout routes for managers/owners only */}
           <Route
             element={
-              <ProtectedRoute allowedRoles={["manager", "owner"]}>
+              <ProtectedRoute allowedRoles={["cashier", "manager", "owner",]}>
                 <Layout />
               </ProtectedRoute>
             }
@@ -64,7 +67,6 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/products" element={<ProductManager />} />
-            <Route path="/logout" element={<Logout />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

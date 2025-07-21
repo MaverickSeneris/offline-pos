@@ -3,6 +3,7 @@ import ProductList from "../components/ProductList";
 import type { Product } from "../data/products";
 import { saveSaleLocally, syncSalesToSupabase } from "../lib/sync"; // 🆕 Offline support
 import Navbar from "../components/Navbar";
+import { useUser } from "../contexts/UserContext";
 
 const CART_KEY = "vendure_cart";
 const SALES_KEY = "vendure_sales";
@@ -107,12 +108,28 @@ export default function POS() {
     alert("\u2705 Checkout successful!");
   };
 
+  const { user } = useUser();
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen mb-20">
       <Navbar />
 
       <div className="flex-1 p-4 bg-gray-100 flex flex-col md:flex-row gap-4">
         <div className="w-full md:w-2/3">
+          <div className="mb-4 p-2 bg-white rounded shadow text-gray-700">
+            <p>
+              {/* Welcome, <strong>{user?.name}</strong> | Role:{" "} */}
+              Welcome,{" "}
+              <strong>
+                {user?.name
+                  .split(" ")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
+              </strong>{" "}
+              | Role: <strong>{user?.role}</strong> | Branch:{" "}
+              <strong>{user?.branch_id}</strong>
+            </p>
+          </div>
           <h1 className="text-2xl font-bold mb-4">Products</h1>
           <ProductList
             onAddToCart={handleAddToCart}

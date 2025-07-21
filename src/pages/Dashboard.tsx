@@ -11,6 +11,13 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
+      <h1 className="text-2xl font-bold mb-2">Welcome, {user?.name} 👋</h1>
+      <p className="text-gray-700">
+        Role: <strong>{user?.role}</strong>
+      </p>
+      <p className="text-gray-700">
+        Branch ID: <strong>{user?.branch_id}</strong>
+      </p>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
 
       <div className="space-y-4">
