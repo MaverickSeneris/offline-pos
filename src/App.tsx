@@ -10,6 +10,7 @@ import ProductManager from "./pages/ProductManager";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import AdminRoles from "./pages/AdminRoles";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -52,6 +53,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin-roles"
+            element={
+              <ProtectedRoute allowedRoles={["owner"]}>
+                <AdminRoles />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Logout is accessible by all roles */}
           <Route path="/logout" element={<Logout />} />
@@ -59,7 +68,7 @@ export default function App() {
           {/* Protected layout routes for managers/owners only */}
           <Route
             element={
-              <ProtectedRoute allowedRoles={["cashier", "manager", "owner",]}>
+              <ProtectedRoute allowedRoles={["cashier", "manager", "owner"]}>
                 <Layout />
               </ProtectedRoute>
             }

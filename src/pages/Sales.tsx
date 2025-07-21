@@ -213,9 +213,11 @@ export default function Sales() {
         <a href="/" className="text-blue-600 underline">
           ← Back to POS
         </a>
-        <a href="/products" className="text-blue-600 underline">
-          Manage Products
-        </a>
+        {["manager", "owner"].includes(user?.role || "") && (
+          <a href="/products" className="text-blue-600 underline">
+            Manage Products
+          </a>
+        )}
       </div>
 
       <h1 className="text-2xl font-bold mb-2">Sales History</h1>
