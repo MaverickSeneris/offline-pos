@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useUser } from "../contexts/UserContext";
 
 // Sale type definition
 // Each sale has an ID, date, item list, totals, and optional tax, cash, change fields
@@ -13,6 +14,7 @@ export default function Sales() {
   // 📅 States to manage date filters
   const [fromDate, setFromDate] = useState(""); // Filter start date
   const [toDate, setToDate] = useState(""); // Filter end date
+  const { user } = useUser();
 
   // 🧲 Load sales from localStorage on component mount
   useEffect(() => {
@@ -211,9 +213,11 @@ export default function Sales() {
         <a href="/" className="text-blue-600 underline">
           ← Back to POS
         </a>
-        <a href="/products" className="text-blue-600 underline">
-          Manage Products
-        </a>
+        {["manager", "owner"].includes(user?.role || "") && (
+          <a href="/products" className="text-blue-600 underline">
+            Manage Products
+          </a>
+        )}
       </div>
 
       <h1 className="text-2xl font-bold mb-2">Sales History</h1>
@@ -286,19 +290,19 @@ export default function Sales() {
                   >
                     Print
                   </button>
-                  <button
-                    onClick={() => handleDelete(sale.id)}
-                    className="bg-red-500 text-black px-2 py-1 rounded"
-                  >
-                    Delete
-                  </button>
+                  {user?.role !== "cashier" && (
+                    <button
+                      onClick={() => handleDelete(sale.id)}
+                      className="bg-red-500 text-black px-2 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="flex justify-between items-center mb-18">
                 <div className="flex flex-col justify-center items-center">
-                  <div className="font-bold text-lg">
-                    Vendure Mart
-                  </div>
+                  <div className="font-bold text-lg">Vendure Mart</div>
                   <div>123 National Rd, Rizal, Laguna</div>
                   <div>Email: hello@venduremart.ph</div>
                   <div>Tel: (049) 123-4567</div>
